@@ -1,0 +1,18 @@
+query updateApplicantGetOrder($where: OrderWhereUniqueInput!, $resultsWhere: ResultWhereInput) {
+	order(where: $where) {
+	    fileNumber
+	    packageSets {
+		    metadata
+		    name
+		    id
+	    }
+	    results(where: $resultsWhere) {
+		    id
+		    attachments {
+		        id
+		        name
+		        url
+		    }
+	    }
+	}
+}

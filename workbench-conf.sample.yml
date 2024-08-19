@@ -1,0 +1,12 @@
+# Copy this file to workbench-conf.yml and fill in the values
+# This file is used to configure the workbench script runner
+# you can run the workbench script with `bun workbench.ts`
+
+# Path to the script you want to run with workbench
+script: ./f/integrations/tazworks/update_applicant_script.ts
+# The arguments to the main function of the script, in order
+inputs:
+  - ""
+  - ""
+  - {}
+  - ""

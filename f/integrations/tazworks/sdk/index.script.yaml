@@ -1,0 +1,10 @@
+summary: ""
+description: ""
+lock: "!inline f/integrations/tazworks/sdk/index.script.lock"
+kind: script
+schema:
+  $schema: "https://json-schema.org/draft/2020-12/schema"
+  type: object
+  properties: {}
+  required: []
+tag: light-high-priority

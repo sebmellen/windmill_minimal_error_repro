@@ -1,0 +1,104 @@
+version: "3.7"
+
+services:
+  db:
+    image: postgres:16
+    deploy:
+      # To use an external database, set replicas to 0 and set DATABASE_URL to the external database url in the .env file
+      replicas: 1
+    shm_size: 1gb
+    restart: unless-stopped
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    expose:
+      - 5432
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: windmill
+      POSTGRES_DB: windmill
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  windmill_server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cerebrum/windmill:local
+    # see https://stackoverflow.com/a/74977892 (Compose implementations SHOULD NOT pull the image from a registry)
+    pull_policy: never
+    deploy:
+      replicas: 1
+    restart: unless-stopped
+    expose:
+      - 8000
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - MODE=server
+    depends_on:
+      db:
+        condition: service_healthy
+
+  windmill_worker:
+    image: cerebrum/windmill:local
+    pull_policy: never
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512M
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - MODE=worker
+      - WORKER_GROUP=integrations
+      - WORKER_TAGS=workers-integrations,deno,python3,go,bash,powershell,dependency,flow,hub,other,bun,nativets,postgresql,mysql,graphql,snowflake,mssql,bigquery,light-high-priority,light-scheduled,heavy-high-priority,heavy-scheduled
+    depends_on:
+      db:
+        condition: service_healthy
+    # to mount the worker folder to debug, KEEP_JOB_DIR=true and mount /.temp/windmill
+    volumes:
+      # mount the docker socket to allow to run docker containers from within the workers
+      - /var/run/docker.sock:/var/run/docker.sock
+      - worker_dependency_cache:/.temp/windmill/cache
+
+  ## This worker is specialized for "native" jobs. Native jobs run in-process and thus are much more lightweight than other jobs
+  windmill_worker_native:
+    image: cerebrum/windmill:local
+    pull_policy: never
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 128M
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      MODE: worker
+      WORKER_GROUP: native
+    depends_on:
+      db:
+        condition: service_healthy
+
+  windmill_caddy:
+    image: caddy:alpine
+    restart: unless-stopped
+    volumes:
+      - ./scripts/start-caddy.sh:/start-caddy.sh
+      - ./.temp/cert.pem:/etc/caddy/cert.pem
+      - ./.temp/key.pem:/etc/caddy/key.pem
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - SERVICE_URL=windmill_server:8000
+    entrypoint: ["/bin/sh", "/start-caddy.sh"]
+
+volumes:
+  db_data: null
+  worker_dependency_cache: null

@@ -1,0 +1,28 @@
+summary: ""
+description: Setup cortex org and package for a TazWorks client
+lock: "!inline f/utilities/tazworks/setup_client.script.lock"
+concurrency_time_window_s: 0
+kind: script
+schema:
+  $schema: "https://json-schema.org/draft/2020-12/schema"
+  type: object
+  properties:
+    clientGuid:
+      type: string
+      description: ""
+      default: null
+      originalType: string
+    craGuid:
+      type: string
+      description: ""
+      default: null
+      originalType: string
+    productName:
+      type: string
+      description: ""
+      default: null
+      originalType: string
+  required:
+    - clientGuid
+    - craGuid
+tag: light-high-priority

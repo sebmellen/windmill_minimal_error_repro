@@ -1,0 +1,14 @@
+auto_invite_as: developer
+auto_invite_enabled: false
+auto_invite_mode: invite
+code_completion_enabled: false
+default_app: null
+default_scripts: null
+deploy_to: null
+error_handler: null
+error_handler_extra_args: null
+error_handler_muted_on_cancel: false
+git_sync: null
+large_file_storage: null
+openai_resource_path: null
+webhook: null

@@ -1,0 +1,1 @@
+{ "windmill.remote": "https://windmill.local.cerebrum.com", "windmill.workspaceId": "integrations", "windmill.token": "workspace", "files.exclude": { "**/*.lock": true }, "search.exclude": { "**/*.lock": true },	"editor.codeActionsOnSave": { "quickfix.biome": "explicit" } }

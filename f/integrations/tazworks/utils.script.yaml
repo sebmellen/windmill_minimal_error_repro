@@ -1,0 +1,24 @@
+summary: TazWorks - Utils
+description: Common tazworks utilities that can be re-used across workflows
+lock: "!inline f/integrations/tazworks/utils.script.lock"
+concurrency_time_window_s: 0
+kind: script
+schema:
+  $schema: "https://json-schema.org/draft/2020-12/schema"
+  type: object
+  properties:
+    anon1:
+      type: object
+      description: ""
+      default: null
+      format: resource-request_args
+    path:
+      type: string
+      description: ""
+      default: null
+      format: ""
+      originalType: string
+  required:
+    - path
+    - anon1
+tag: light-high-priority
